@@ -119,48 +119,35 @@ const formatTime = (timeString: string): string => {
   }
 };
 
-// Calculate hours until tomorrow 7 AM plus any offset
-const getHoursUntilWakeUp = (offsetMinutes = 0): number => {
+// Calculate hours until tomorrow 7 AM
+const getHoursUntilWakeUp = (): number => {
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(7, 0, 0, 0);
-  tomorrow.setMinutes(tomorrow.getMinutes() + offsetMinutes);
   
   const diffMs = tomorrow.getTime() - now.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   return diffHours;
 };
 
-// Format wake-up time (base 7:00 AM) with an offset
-const formatWakeUpTime = (offsetMinutes = 0): string => {
-  const totalMinutes = 7 * 60 + offsetMinutes;
-  const hours24 = Math.floor(totalMinutes / 60) % 24;
-  const minutes = totalMinutes % 60;
-  const ampm = hours24 >= 12 ? 'PM' : 'AM';
-  const hours12 = hours24 % 12 || 12;
-  return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-};
-
 export const TomorrowMorningPanel: React.FC = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [wakeUpOffsetMinutes, setWakeUpOffsetMinutes] = useState(0);
   const [hoursUntilWakeUp, setHoursUntilWakeUp] = useState(getHoursUntilWakeUp());
-  const [tipDismissed, setTipDismissed] = useState(false);
 
   // Update countdown every 15 minutes for better accuracy
   useEffect(() => {
     const updateCountdown = () => {
-      setHoursUntilWakeUp(getHoursUntilWakeUp(wakeUpOffsetMinutes));
+      setHoursUntilWakeUp(getHoursUntilWakeUp());
     };
     
     updateCountdown();
     const interval = setInterval(updateCountdown, 900000); // Update every 15 minutes
     
     return () => clearInterval(interval);
-  }, [wakeUpOffsetMinutes]);
+  }, []);
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -276,9 +263,6 @@ export const TomorrowMorningPanel: React.FC = () => {
           weathercode,
           tip
         });
-        setTipDismissed(false);
-        setWakeUpOffsetMinutes(0);
-        setHoursUntilWakeUp(getHoursUntilWakeUp(0));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load weather data');
       } finally {
@@ -298,21 +282,7 @@ export const TomorrowMorningPanel: React.FC = () => {
     boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.4), 0 2px 8px 0 rgba(0, 0, 0, 0.2)'
   };
 
-  const showSmartTip = Boolean(weatherData?.tip && !tipDismissed);
-  const wakeUpTimeLabel = formatWakeUpTime(wakeUpOffsetMinutes);
-
-  const handleMaybeLater = () => {
-    setTipDismissed(true);
-  };
-
-  const handleAdjustTime = () => {
-    setWakeUpOffsetMinutes((prev) => {
-      const next = prev + 10;
-      setHoursUntilWakeUp(getHoursUntilWakeUp(next));
-      return next;
-    });
-    setTipDismissed(true);
-  };
+  const showSmartTip = Boolean(weatherData?.tip);
 
   return (
     <div className="w-full">
@@ -367,7 +337,7 @@ export const TomorrowMorningPanel: React.FC = () => {
                   lineHeight: '1.4'
                 }}
               >
-                {wakeUpTimeLabel} Wake-Up
+                7:00 AM Wake-Up
               </div>
               {/* Countdown */}
               <div 
@@ -465,7 +435,10 @@ export const TomorrowMorningPanel: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={handleMaybeLater}
+                    onClick={() => {
+                      // Handle "Maybe Later" action
+                      console.log('Maybe Later clicked');
+                    }}
                     style={{
                       flex: 1,
                       backgroundColor: 'transparent',
@@ -491,7 +464,10 @@ export const TomorrowMorningPanel: React.FC = () => {
                     Maybe Later
                   </button>
                   <button
-                    onClick={handleAdjustTime}
+                    onClick={() => {
+                      // Handle "Adjust +10 min" action
+                      console.log('Adjust +10 min clicked');
+                    }}
                     style={{
                       flex: 1,
                       background: 'linear-gradient(90deg, rgba(255, 200, 100, 0.25) 0%, rgba(255, 178, 122, 0.25) 100%)',

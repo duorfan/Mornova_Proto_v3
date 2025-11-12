@@ -12,6 +12,7 @@ import { Toaster } from './components/ui/sonner';
 import { ArrowLeft, Plus, Clock, Shield, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import lampImage from './assets/4db511e48f510a8bcb756dd7d246aa8b5c88b734.png';
+import { TomorrowMorningPanel } from './components/TomorrowMorningPanel';
 
 // Theme Context
 const ThemeContext = createContext({
@@ -465,6 +466,11 @@ const HomeScreen = ({ onNavigate, personality, setPersonality }) => {
         hasPersonality={!!(selectedResponse || personality.tone)}
         onTap={() => {}}
       />
+
+      {/* Tomorrow Morning Weather Panel */}
+      <div className="w-full mb-8">
+        <TomorrowMorningPanel />
+      </div>
 
       {/* Personality Setup Header */}
       <div className="text-left mb-6">
