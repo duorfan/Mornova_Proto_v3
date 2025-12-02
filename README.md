@@ -7,5 +7,6 @@
 
   Run `npm i` to install the dependencies.
 
-  Run `npm run dev` to start the development server.
+  Start the Next.js dev server with `npm run dev` (defaults to http://localhost:3000).  
+  Build for production with `npm run build` and serve with `npm start`.
   
