@@ -1,3 +1,7 @@
 node_modules
-build
+.next
 .DS_Store
+*.local
+
+# Local Claude Code settings (machine-specific; keep launch.json tracked)
+.claude/settings.local.json

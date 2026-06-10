@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +13,9 @@ import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import { ArrowLeft, Plus, Clock, Shield, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
-const lampImage = "/lamp.png";
 import { TomorrowMorningPanel } from '@/components/TomorrowMorningPanel';
+
+const lampImage = "/lamp.png";
 
 // Theme Context
 const ThemeContext = createContext({
@@ -85,48 +86,6 @@ const GlassCard = ({ children, className = '', ...props }: { children?: React.Re
     </Card>
   );
 };
-
-const NavBar = ({ hideNav }: { hideNav: boolean }) => (
-  <div className="pointer-events-none fixed w-full max-w-sm flex justify-center">
-    <div className="pointer-events-auto w-full max-w-sm">
-      <nav
-        aria-label="Primary"
-        className="w-full rounded-2xl transition-transform duration-200 ease-out"
-        style={{
-          transform: hideNav ? "translateY(-150%)" : "translateY(0)",
-          backdropFilter: "blur(18px)",
-          background: "linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08))",
-          border: "1px solid rgba(255, 255, 255, 0.22)",
-          boxShadow: "0 14px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.2)"
-        }}
-      >
-        <div className="flex items-center px-3 py-2 gap-3">
-          <div className="flex items-center gap-2" aria-label="Mornova">
-            <Sparkles style={{ color: '#D4D4D8' }} size={20} aria-hidden />
-            <span className="text-sm" style={{ color: '#F3F4F6', fontWeight: 600 }}>Mornova</span>
-          </div>
-          <a
-            href="https://www.figma.com/design/98w1WQIDdtzI9jlsW6qHEU/Mornova-App-Prototype-v3"
-            target="_blank"
-            rel="noreferrer noopener"
-            className="text-sm whitespace-nowrap ml-auto"
-            style={{
-              color: '#ffffffff',
-              textDecoration: 'none',
-              transition: 'opacity 120ms ease',
-              padding: '6px 10px',
-              borderRadius: '10px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-          >
-            View Case Study
-          </a>
-        </div>
-      </nav>
-    </div>
-  </div>
-);
 
 // Enhanced Lamp Preview Component with Personality Animations
 const LampPreview = ({ personality, hasPersonality = false, onTap }) => {
@@ -315,7 +274,7 @@ const LampPreview = ({ personality, hasPersonality = false, onTap }) => {
 };
 
 // Simplified Home Screen with Tinder-style Cards
-const HomeScreen = ({ onNavigate, personality, setPersonality, hideNav }) => {
+const HomeScreen = ({ onNavigate, personality, setPersonality }) => {
   const [cardOrder, setCardOrder] = useState([0, 1, 2, 3]); // Track card order for infinite scrolling
   const [selectedResponse, setSelectedResponse] = useState<any>(null);
   const [cardHistory, setCardHistory] = useState<any[]>([]);
@@ -456,16 +415,18 @@ const HomeScreen = ({ onNavigate, personality, setPersonality, hideNav }) => {
 
   return (
     <div className="space-y-6 pt-[30px] pr-[20px] pb-[60px] pl-[20px]">
-      <NavBar hideNav={hideNav} />
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <Sparkles style={{ color: '#D4D4D8' }} size={24} />
+        <h1 style={{ color: '#F3F4F6' }}>Mornova</h1>
+      </div>
+
       {/* Header Text */}
-      <br></br>
-      <br></br>
-      <br></br>
       <div className="text-left" style={{ marginBottom: '10vh' }}>
         <h1 style={{ color: '#F3F4F6', fontFamily: 'Futura, sans-serif', fontSize: 'calc(1.5rem * 1.3)' }} className="mb-2 mt-1">Good Evening</h1>
         
         {/* Status line - text content and live indicator */}
-        <div className="flex items-center justify-between mt-[-5px] mr-[0px] mb-[0px] ml-[0px]" role="status" aria-live="polite">
+        <div className="flex items-center justify-between mt-[-5px] mr-[0px] mb-[0px] ml-[0px]">
           <p 
             style={{ color: '#A1A1AA', fontFamily: 'Futura, sans-serif', }}
             className="text-base"
@@ -1212,27 +1173,6 @@ export default function App() {
   const isNightMode = true;
   const toggleMode = () => {}; // No-op since we control mode based on screen
 
-  const [hideNav, setHideNav] = useState(false);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const y = window.scrollY;
-      const delta = y - lastScrollY.current;
-      if (y < 8) {
-        setHideNav(false);
-      } else if (delta > 4) {
-        setHideNav(true);
-      } else if (delta < -4) {
-        setHideNav(false);
-      }
-      lastScrollY.current = y;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const renderScreen = () => {
     switch (currentScreen) {
       case 'routine':
@@ -1242,7 +1182,7 @@ export default function App() {
       case 'preview':
         return <PreviewScreen onBack={() => setCurrentScreen('home')} onActivate={handleActivate} personality={personality} routine={routine} rules={rules} />;
       default:
-        return <HomeScreen onNavigate={setCurrentScreen} personality={personality} setPersonality={setPersonality} hideNav={hideNav} />;
+        return <HomeScreen onNavigate={setCurrentScreen} personality={personality} setPersonality={setPersonality} />;
     }
   };
 
@@ -1273,9 +1213,9 @@ export default function App() {
         />
         
         <WavyBackground />
-        <main className="relative z-10 max-w-sm mx-auto min-h-screen pt-40 pb-8" aria-live="polite">
+        <div className="relative z-10 max-w-sm mx-auto min-h-screen">
           {renderScreen()}
-        </main>
+        </div>
         <Toaster />
       </div>
     </ThemeContext.Provider>
